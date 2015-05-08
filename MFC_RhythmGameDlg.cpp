@@ -6,11 +6,43 @@
 #include "MFC_RhythmGame.h"
 #include "MFC_RhythmGameDlg.h"
 #include "afxdialogex.h"
+#include <mmsystem.h>
+#include <thread>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
+// 匿名名前空間
+namespace
+{
+    // 開始時間を記録する変数
+    DWORD time_start;
+    DWORD time_now;
+    // メトロノーム開始フラグ
+    bool isMetronome = false;
+    // BPM
+    double bpm = 100.0;
+
+    // メトロノームのスレッド
+    std::thread Metronome;
+}
+
+// メトロノームを鳴らす関数
+//   TODO: あとでクラス化
+void PlayMetronome()
+{
+    while (isMetronome) {
+        if (
+            (timeGetTime() - time_start) >= ((DWORD)((60.0 / bpm) * 1000))
+            ) {
+            // タイマーをリセット
+            time_start = timeGetTime();
+            // 鳴らす
+            Beep(1000, 100);
+        }
+    }
+}
 
 // アプリケーションのバージョン情報に使われる CAboutDlg ダイアログ
 
@@ -164,12 +196,24 @@ void CMFC_RhythmGameDlg::OnBnClickedButton1()
 // メトロノームスタートボタン
 void CMFC_RhythmGameDlg::OnBnClickedButton2()
 {
-    // TODO: ここにコントロール通知ハンドラー コードを追加します。
+    // 押した時の時間を記録
+    time_start = timeGetTime();
+    // メトロノームフラグをオン
+    isMetronome = true;
+
+    // スレッド制御
+    if (Metronome.get_id() == std::thread::id()) {
+        // メトロノームを鳴らすスレッドを走らせる
+        Metronome = std::thread(PlayMetronome);
+    }
 }
 
 
 // メトロノームストップボタン
 void CMFC_RhythmGameDlg::OnBnClickedButton3()
 {
-    // TODO: ここにコントロール通知ハンドラー コードを追加します。
+    // メトロノームフラグをオフ
+    isMetronome = false;
+    // メトロノームスレッドを放棄
+    Metronome.detach();
 }
