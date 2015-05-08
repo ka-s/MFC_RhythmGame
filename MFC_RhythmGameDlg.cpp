@@ -13,18 +13,24 @@
 #define new DEBUG_NEW
 #endif
 
+#define WM_RCV (WM_USER + 1)
+
 // 匿名名前空間
 namespace
 {
     // 開始時間を記録する変数
     DWORD time_start;
-    DWORD time_now;
+    // メトロノームが鳴るべき時間
+    DWORD time_Metro;
     // メトロノーム開始フラグ
     bool isMetronome = false;
     // BPM
     double bpm = 100.0;
     // 現在のテンポ数
     double tempoCount = 1.0;
+
+    // ダイアログ用ハンドル
+    HWND hDlg;
 
     // メトロノームのスレッド
     std::thread Metronome;
@@ -38,16 +44,36 @@ void PlayMetronome()
 {
     while (isMetronome)
     {
+        // 時が来たら鳴らす
         if (
             (timeGetTime() - time_start) >= ((DWORD)(((60.0 / bpm) * 1000.0) * tempoCount))
             )
         {
+            // 鳴らした時間を保存
+            time_Metro = (DWORD)(((60.0 / bpm) * 1000.0) * tempoCount);
+            //time_Metro = timeGetTime() - time_start;
+            // メッセージ送信
+            PostMessage(hDlg, WM_RCV, (WPARAM)time_Metro, NULL);
+
             // テンポカウントを+1
             tempoCount += 1.0;
             // 鳴らす
             Beep(1000, 50);
+            //TODO: Sleep(PERIOD - a);
         }
     }
+}
+
+// --------------------------------
+//  メッセージ受信時に描画する関数
+// --------------------------------
+LRESULT CMFC_RhythmGameDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
+{
+    CString s;
+    s.Format(_T("%d"), time_Metro);
+    EditControl02.SetWindowTextW(s);
+
+    return true;
 }
 
 // アプリケーションのバージョン情報に使われる CAboutDlg ダイアログ
@@ -94,6 +120,8 @@ CMFC_RhythmGameDlg::CMFC_RhythmGameDlg(CWnd* pParent /*=NULL*/)
 void CMFC_RhythmGameDlg::DoDataExchange(CDataExchange* pDX)
 {
     CDialogEx::DoDataExchange(pDX);
+    DDX_Control(pDX, IDC_EDIT1, EditControl01);
+    DDX_Control(pDX, IDC_EDIT2, EditControl02);
 }
 
 BEGIN_MESSAGE_MAP(CMFC_RhythmGameDlg, CDialogEx)
@@ -103,6 +131,7 @@ BEGIN_MESSAGE_MAP(CMFC_RhythmGameDlg, CDialogEx)
     ON_BN_CLICKED(IDC_BUTTON1, &CMFC_RhythmGameDlg::OnBnClickedButton1)
     ON_BN_CLICKED(IDC_BUTTON2, &CMFC_RhythmGameDlg::OnBnClickedButton2)
     ON_BN_CLICKED(IDC_BUTTON3, &CMFC_RhythmGameDlg::OnBnClickedButton3)
+    ON_MESSAGE(WM_RCV, &OnMessageRCV)
 END_MESSAGE_MAP()
 
 
@@ -111,6 +140,8 @@ END_MESSAGE_MAP()
 BOOL CMFC_RhythmGameDlg::OnInitDialog()
 {
     CDialogEx::OnInitDialog();
+
+    hDlg = this->m_hWnd;
 
     // "バージョン情報..." メニューをシステム メニューに追加します。
 
@@ -196,7 +227,18 @@ HCURSOR CMFC_RhythmGameDlg::OnQueryDragIcon()
 // --------------------------------
 void CMFC_RhythmGameDlg::OnBnClickedButton1()
 {
-    // TODO: ここにコントロール通知ハンドラー コードを追加します。
+    // 差分の時間
+    static DWORD time_click_delta;
+
+    // 差分の時間計算
+    time_click_delta = timeGetTime() - time_start - time_Metro;
+
+    // 出力する文字列の作成
+    CString str;
+    str.Format(_T("%d"), time_click_delta);
+
+    // 文字列を描画
+    EditControl01.SetWindowTextW(str);
 }
 
 // --------------------------------

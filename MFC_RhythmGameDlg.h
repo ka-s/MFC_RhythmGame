@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "afxwin.h"
 
 
 // CMFC_RhythmGameDlg ダイアログ
@@ -33,4 +34,9 @@ public:
     afx_msg void OnBnClickedButton1();
     afx_msg void OnBnClickedButton2();
     afx_msg void OnBnClickedButton3();
+
+    afx_msg LRESULT OnMessageRCV(WPARAM wParam, LPARAM lParam);
+
+    CEdit EditControl01;
+    CEdit EditControl02;
 };
