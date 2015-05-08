@@ -23,23 +23,27 @@ namespace
     bool isMetronome = false;
     // BPM
     double bpm = 100.0;
+    // 現在のテンポ数
+    double tempoCount = 1.0;
 
     // メトロノームのスレッド
     std::thread Metronome;
 }
 
-// メトロノームを鳴らす関数
-//   TODO: あとでクラス化
+// --------------------------------
+//  メトロノームを鳴らす関数
+//    TODO: あとでクラス化
+// --------------------------------
 void PlayMetronome()
 {
     while (isMetronome) {
         if (
-            (timeGetTime() - time_start) >= ((DWORD)((60.0 / bpm) * 1000))
+            (timeGetTime() - time_start) >= ( (DWORD)( ((60.0 / bpm) * 1000.0 ) * tempoCount) )
             ) {
-            // タイマーをリセット
-            time_start = timeGetTime();
+            // テンポカウントを+1
+            tempoCount += 1.0;
             // 鳴らす
-            Beep(1000, 100);
+            Beep(1000, 50);
         }
     }
 }
@@ -185,21 +189,25 @@ HCURSOR CMFC_RhythmGameDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-// クリックボタン
+// --------------------------------
+//  クリックボタン
+// --------------------------------
 void CMFC_RhythmGameDlg::OnBnClickedButton1()
 {
     // TODO: ここにコントロール通知ハンドラー コードを追加します。
 }
 
-
-// メトロノームスタートボタン
+// --------------------------------
+//  メトロノームスタートボタン
+// --------------------------------
 void CMFC_RhythmGameDlg::OnBnClickedButton2()
 {
     // 押した時の時間を記録
     time_start = timeGetTime();
     // メトロノームフラグをオン
     isMetronome = true;
+    // テンポカウントを初期化
+    tempoCount = 1.0;
 
     // スレッド制御
     if (Metronome.get_id() == std::thread::id()) {
@@ -208,8 +216,9 @@ void CMFC_RhythmGameDlg::OnBnClickedButton2()
     }
 }
 
-
-// メトロノームストップボタン
+// --------------------------------
+//  メトロノームストップボタン
+// --------------------------------
 void CMFC_RhythmGameDlg::OnBnClickedButton3()
 {
     // メトロノームフラグをオフ
