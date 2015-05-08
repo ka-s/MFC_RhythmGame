@@ -62,6 +62,9 @@ BEGIN_MESSAGE_MAP(CMFC_RhythmGameDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+    ON_BN_CLICKED(IDC_BUTTON1, &CMFC_RhythmGameDlg::OnBnClickedButton1)
+    ON_BN_CLICKED(IDC_BUTTON2, &CMFC_RhythmGameDlg::OnBnClickedButton2)
+    ON_BN_CLICKED(IDC_BUTTON3, &CMFC_RhythmGameDlg::OnBnClickedButton3)
 END_MESSAGE_MAP()
 
 
@@ -150,3 +153,23 @@ HCURSOR CMFC_RhythmGameDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+// クリックボタン
+void CMFC_RhythmGameDlg::OnBnClickedButton1()
+{
+    // TODO: ここにコントロール通知ハンドラー コードを追加します。
+}
+
+
+// メトロノームスタートボタン
+void CMFC_RhythmGameDlg::OnBnClickedButton2()
+{
+    // TODO: ここにコントロール通知ハンドラー コードを追加します。
+}
+
+
+// メトロノームストップボタン
+void CMFC_RhythmGameDlg::OnBnClickedButton3()
+{
+    // TODO: ここにコントロール通知ハンドラー コードを追加します。
+}
