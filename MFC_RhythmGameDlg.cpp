@@ -28,6 +28,10 @@ namespace
     double bpm = 100.0;
     // 現在のテンポ数
     double tempoCount = 1.0;
+    // 判定幅[ms]
+    //   TODO: クラス化
+    const int judgment_perfect = 64;
+    const int judgment_great = 128;
 
     // ダイアログ用ハンドル
     HWND hDlg;
@@ -229,13 +233,36 @@ void CMFC_RhythmGameDlg::OnBnClickedButton1()
 {
     // 差分の時間
     static DWORD time_click_delta;
-
-    // 差分の時間計算
-    time_click_delta = timeGetTime() - time_start - time_Metro;
-
     // 出力する文字列の作成
     CString str;
-    str.Format(_T("%d"), time_click_delta);
+
+    // 差分の時間計算
+    //   TODO: 計算をわかりやすく
+    time_click_delta = timeGetTime() - time_start - time_Metro;
+
+    // 判定
+    //   TODO: 条件分改善
+    //   TODO: クラス化
+    // Perfect判定
+    if (
+        (time_click_delta) <= (judgment_perfect) ||
+        (time_click_delta) >= (((60.0 / bpm) * 1000.0) - judgment_perfect)
+        )
+    {
+        str.Format(_T("PERFECT!! : %d"), time_click_delta);
+    }
+    // Great判定
+    else if (
+        (time_click_delta) <= (judgment_great) ||
+        (time_click_delta) >= (((60.0 / bpm) * 1000.0) - judgment_great)
+        )
+    {
+        str.Format(_T("GREAT! : %d"), time_click_delta);
+    }
+    else
+    {
+        str.Format(_T("Bad... : %d"), time_click_delta);
+    }
 
     // 文字列を描画
     EditControl01.SetWindowTextW(str);
