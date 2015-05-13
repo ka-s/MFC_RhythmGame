@@ -8,6 +8,7 @@
 #include "afxdialogex.h"
 #include <mmsystem.h>
 #include <thread>
+#include "Constant.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -24,14 +25,8 @@ namespace
     DWORD time_Metro;
     // メトロノーム開始フラグ
     bool isMetronome = false;
-    // BPM
-    double bpm = 100.0;
     // 現在のテンポ数
     double tempoCount = 1.0;
-    // 判定幅[ms]
-    //   TODO: クラス化
-    const int judgment_perfect = 64;
-    const int judgment_great = 128;
 
     // ダイアログ用ハンドル
     HWND hDlg;
@@ -41,7 +36,7 @@ namespace
 }
 
 // --------------------------------
-//  メトロノームを鳴らす関数
+//  メトロノームを鳴らすメソッド
 //    TODO: あとでクラス化
 // --------------------------------
 void PlayMetronome()
@@ -49,6 +44,7 @@ void PlayMetronome()
     while (isMetronome)
     {
         // 時が来たら鳴らす
+        //   TODO: 条件文改善
         if (
             (timeGetTime() - time_start) >= ((DWORD)(((60.0 / bpm) * 1000.0) * tempoCount))
             )

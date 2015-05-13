@@ -103,6 +103,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Constant.h" />
     <ClInclude Include="MFC_RhythmGame.h" />
     <ClInclude Include="MFC_RhythmGameDlg.h" />
     <ClInclude Include="Resource.h" />
