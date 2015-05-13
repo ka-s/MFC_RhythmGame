@@ -55,7 +55,6 @@ void PlayMetronome()
         {
             // 鳴らした時間を保存
             time_Metro = (DWORD)(((60.0 / bpm) * 1000.0) * tempoCount);
-            //time_Metro = timeGetTime() - time_start;
             // メッセージ送信
             PostMessage(hDlg, WM_RCV, (WPARAM)time_Metro, NULL);
 
@@ -63,8 +62,66 @@ void PlayMetronome()
             tempoCount += 1.0;
             // 鳴らす
             Beep(1000, 50);
-            //TODO: Sleep(PERIOD - a);
         }
+    }
+}
+
+// --------------------------------
+//  Perfect判定関数
+//    TODO: あとでクラス化
+// --------------------------------
+bool IsPerfect(DWORD click_time)
+{
+    // Great判定幅に入っていればTrue
+    if (
+        (click_time) <= (judgment_perfect) ||
+        (click_time) >= (((60.0 / bpm) * 1000.0) - judgment_perfect)
+        )
+    {
+        return true;
+    }
+
+    return false;
+}
+
+// --------------------------------
+//  Great判定関数
+//    TODO: あとでクラス化
+// --------------------------------
+bool IsGreat(DWORD click_time)
+{
+    // Perfect判定幅に入っていればTrue
+    if (
+        (click_time) <= (judgment_great) ||
+        (click_time) >= (((60.0 / bpm) * 1000.0) - judgment_great)
+        )
+    {
+        return true;
+    }
+
+    return false;
+}
+
+// --------------------------------
+//  判定執行関数
+//    TODO: あとでクラス化
+// --------------------------------
+void Judge(DWORD click_time, CString* s)
+{
+    // Perfect判定
+    if (IsPerfect(click_time))
+    {
+        s->Format(_T("PERFECT!! : %d"), click_time);
+    }
+    // Great判定
+    else if (IsGreat(click_time))
+    {
+        s->Format(_T("GREAT! : %d"), click_time);
+    }
+    // Bad判定
+    else
+    {
+        s->Format(_T("Bad... : %d"), click_time);
     }
 }
 
@@ -241,28 +298,7 @@ void CMFC_RhythmGameDlg::OnBnClickedButton1()
     time_click_delta = timeGetTime() - time_start - time_Metro;
 
     // 判定
-    //   TODO: 条件分改善
-    //   TODO: クラス化
-    // Perfect判定
-    if (
-        (time_click_delta) <= (judgment_perfect) ||
-        (time_click_delta) >= (((60.0 / bpm) * 1000.0) - judgment_perfect)
-        )
-    {
-        str.Format(_T("PERFECT!! : %d"), time_click_delta);
-    }
-    // Great判定
-    else if (
-        (time_click_delta) <= (judgment_great) ||
-        (time_click_delta) >= (((60.0 / bpm) * 1000.0) - judgment_great)
-        )
-    {
-        str.Format(_T("GREAT! : %d"), time_click_delta);
-    }
-    else
-    {
-        str.Format(_T("Bad... : %d"), time_click_delta);
-    }
+    Judge(time_click_delta, &str);
 
     // 文字列を描画
     EditControl01.SetWindowTextW(str);
