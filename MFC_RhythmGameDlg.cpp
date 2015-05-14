@@ -29,6 +29,8 @@ namespace
     double tempoCount = 1.0;
     // クリアゲージ
     int clear_gauge = 0;
+    // 現在叩いたノーツ数
+    int now_notes_count = -1;
 
     // ダイアログ用ハンドル
     HWND hDlg;
@@ -320,8 +322,16 @@ void CMFC_RhythmGameDlg::OnBnClickedButton1()
     //   TODO: 計算をわかりやすく
     time_click_delta = timeGetTime() - time_start - time_Metro;
 
-    // 判定
-    Judge(time_click_delta, &str);
+    // ノーツ数をプラス
+    now_notes_count++;
+
+    // 規定ノーツ数以内で判定を取る
+    if (now_notes_count > 0 &&
+        now_notes_count <= notes)
+    {
+        // 判定
+        Judge(time_click_delta, &str);
+    }
 
     // 文字列を描画
     EditControl01.SetWindowTextW(str);
@@ -338,6 +348,8 @@ void CMFC_RhythmGameDlg::OnBnClickedButton2()
     isMetronome = true;
     // テンポカウントを初期化
     tempoCount = 1.0;
+    // ノーツ数を初期化
+    now_notes_count = -1;
 
     // スレッド制御
     if (Metronome.get_id() == std::thread::id())
