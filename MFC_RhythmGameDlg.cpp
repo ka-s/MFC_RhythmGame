@@ -27,6 +27,8 @@ namespace
     bool isMetronome = false;
     // 現在のテンポ数
     double tempoCount = 1.0;
+    // クリアゲージ
+    int clear_gauge = 0;
 
     // ダイアログ用ハンドル
     HWND hDlg;
@@ -59,6 +61,25 @@ void PlayMetronome()
             // 鳴らす
             Beep(1000, 50);
         }
+    }
+}
+
+// --------------------------------
+//  ゲージ増減関数
+//    TODO: あとでクラス化
+// --------------------------------
+void CalcGauge(int mount)
+{
+    clear_gauge += mount;
+
+    // ゲージを0～100に制限
+    if (clear_gauge > 100)
+    {
+        clear_gauge = 100;
+    }
+    if (clear_gauge < 0)
+    {
+        clear_gauge = 0;
     }
 }
 
@@ -107,17 +128,23 @@ void Judge(DWORD click_time, CString* s)
     // Perfect判定
     if (IsPerfect(click_time))
     {
-        s->Format(_T("PERFECT!! : %d"), click_time);
+        CalcGauge(up_gauge);
+
+        s->Format(_T("PERFECT!!\r\n%d"), clear_gauge);
     }
     // Great判定
     else if (IsGreat(click_time))
     {
-        s->Format(_T("GREAT! : %d"), click_time);
+        CalcGauge(up_gauge / 2);
+
+        s->Format(_T("GREAT!\r\n%d"), clear_gauge);
     }
     // Bad判定
     else
     {
-        s->Format(_T("Bad... : %d"), click_time);
+        CalcGauge(-up_gauge / 2);
+
+        s->Format(_T("Bad...\r\n%d"), clear_gauge);
     }
 }
 
