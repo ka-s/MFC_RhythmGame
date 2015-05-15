@@ -1,7 +1,7 @@
 #pragma once
 
 // BPM
-double bpm = 200.0;
+double bpm = 100.0;
 
 // ノーツ数
 int notes = 15;
@@ -12,3 +12,6 @@ const int judgment_great = 128;
 
 // ゲージ増加値
 const int up_gauge = 20;
+
+// 曲数
+const int music_ids = 2;

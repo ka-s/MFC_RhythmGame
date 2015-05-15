@@ -32,6 +32,8 @@ namespace
     int clear_gauge = 0;
     // 現在叩いたノーツ数
     int now_notes_count = -1;
+    // 曲ID
+    int music_id = 1;
 
     // ダイアログ用ハンドル
     HWND hDlg;
@@ -213,6 +215,7 @@ void CMFC_RhythmGameDlg::DoDataExchange(CDataExchange* pDX)
     CDialogEx::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_EDIT1, EditControl01);
     DDX_Control(pDX, IDC_EDIT2, EditControl02);
+    DDX_Control(pDX, IDC_EDIT3, EditControl03);
 }
 
 BEGIN_MESSAGE_MAP(CMFC_RhythmGameDlg, CDialogEx)
@@ -223,6 +226,10 @@ BEGIN_MESSAGE_MAP(CMFC_RhythmGameDlg, CDialogEx)
     ON_BN_CLICKED(IDC_BUTTON2, &CMFC_RhythmGameDlg::OnBnClickedButton2)
     ON_BN_CLICKED(IDC_BUTTON3, &CMFC_RhythmGameDlg::OnBnClickedButton3)
     ON_MESSAGE(WM_RCV, &OnMessageRCV)
+    ON_BN_CLICKED(IDC_BUTTON4, &CMFC_RhythmGameDlg::OnBnClickedButton4)
+    ON_BN_CLICKED(IDC_BUTTON5, &CMFC_RhythmGameDlg::OnBnClickedButton5)
+    ON_BN_CLICKED(IDC_BUTTON6, &CMFC_RhythmGameDlg::OnBnClickedButton6)
+    ON_BN_CLICKED(IDC_BUTTON7, &CMFC_RhythmGameDlg::OnBnClickedButton7)
 END_MESSAGE_MAP()
 
 
@@ -339,8 +346,17 @@ void CMFC_RhythmGameDlg::OnBnClickedButton1()
     now_notes_count++;
 
     // キー音を鳴らす
-    KeySound = std::thread(PlayKeySound::Daiku, now_notes_count);
-    KeySound.detach();
+    switch (music_id)
+    {
+    case 1:
+        KeySound = std::thread(PlayKeySound::CDE, now_notes_count);
+        KeySound.detach();
+        break;
+    case 2:
+        KeySound = std::thread(PlayKeySound::Daiku, now_notes_count);
+        KeySound.detach();
+        break;
+    }
 
     // スタートの時だったら初期化
     if (now_notes_count == 0)
@@ -398,4 +414,46 @@ void CMFC_RhythmGameDlg::OnBnClickedButton3()
     {
         Metronome.detach();
     }
+}
+
+// --------------------------------
+//  ドレミファ選択ボタン
+// --------------------------------
+void CMFC_RhythmGameDlg::OnBnClickedButton4()
+{
+    music_id = 1;
+}
+
+// --------------------------------
+//  第九選択ボタン
+// --------------------------------
+void CMFC_RhythmGameDlg::OnBnClickedButton5()
+{
+    music_id = 2;
+}
+
+// --------------------------------
+//  BPMプラスボタン
+// --------------------------------
+void CMFC_RhythmGameDlg::OnBnClickedButton6()
+{
+    CString s;
+
+    bpm += 1;
+
+    s.Format(_T("BPM = %f"), bpm);
+    EditControl03.SetWindowTextW(s);
+}
+
+// --------------------------------
+//  BPMマイナスボタン
+// --------------------------------
+void CMFC_RhythmGameDlg::OnBnClickedButton7()
+{
+    CString s;
+
+    bpm -= 1;
+
+    s.Format(_T("BPM = %f"), bpm);
+    EditControl03.SetWindowTextW(s);
 }
