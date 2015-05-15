@@ -1,10 +1,10 @@
 #pragma once
 
 // BPM
-double bpm = 100.0;
+double bpm = 200.0;
 
 // ƒm[ƒc”
-int notes = 8;
+int notes = 15;
 
 // ”»’è•[ms]
 const int judgment_perfect = 64;

@@ -9,6 +9,7 @@
 #include <mmsystem.h>
 #include <thread>
 #include "Constant.h"
+#include "PlayKeySound.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -67,43 +68,6 @@ void PlayMetronome()
                 Beep(1000, 50);
             }
         }
-    }
-}
-
-// --------------------------------
-//  キー音を鳴らす関数
-//    TODO: 別ファイルに移動
-// --------------------------------
-void PlayKeySound()
-{
-    switch (now_notes_count)
-    {
-    case 1:
-        Beep(262, 100);
-        break;
-    case 2:
-        Beep(294, 100);
-        break;
-    case 3:
-        Beep(330, 100);
-        break;
-    case 4:
-        Beep(349, 100);
-        break;
-    case 5:
-        Beep(392, 100);
-        break;
-    case 6:
-        Beep(440, 100);
-        break;
-    case 7:
-        Beep(494, 100);
-        break;
-    case 8:
-        Beep(523, 100);
-        break;
-    default:
-        break;
     }
 }
 
@@ -375,7 +339,7 @@ void CMFC_RhythmGameDlg::OnBnClickedButton1()
     now_notes_count++;
 
     // キー音を鳴らす
-    KeySound = std::thread(PlayKeySound);
+    KeySound = std::thread(PlayKeySound::Daiku, now_notes_count);
     KeySound.detach();
 
     // スタートの時だったら初期化
