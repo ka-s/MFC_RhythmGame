@@ -37,11 +37,12 @@ namespace
 
     // メトロノームのスレッド
     std::thread Metronome;
+    // キー音を鳴らすスレッド
+    std::thread KeySound;
 }
 
 // --------------------------------
 //  メトロノームを鳴らすメソッド
-//    TODO: あとでクラス化
 // --------------------------------
 void PlayMetronome()
 {
@@ -60,9 +61,49 @@ void PlayMetronome()
 
             // テンポカウントを+1
             tempoCount += 1.0;
-            // 鳴らす
-            Beep(1000, 50);
+            // 演奏中以外鳴らす
+            if (now_notes_count < 0)
+            {
+                Beep(1000, 50);
+            }
         }
+    }
+}
+
+// --------------------------------
+//  キー音を鳴らす関数
+//    TODO: 別ファイルに移動
+// --------------------------------
+void PlayKeySound()
+{
+    switch (now_notes_count)
+    {
+    case 1:
+        Beep(262, 100);
+        break;
+    case 2:
+        Beep(294, 100);
+        break;
+    case 3:
+        Beep(330, 100);
+        break;
+    case 4:
+        Beep(349, 100);
+        break;
+    case 5:
+        Beep(392, 100);
+        break;
+    case 6:
+        Beep(440, 100);
+        break;
+    case 7:
+        Beep(494, 100);
+        break;
+    case 8:
+        Beep(523, 100);
+        break;
+    default:
+        break;
     }
 }
 
@@ -310,20 +351,39 @@ HCURSOR CMFC_RhythmGameDlg::OnQueryDragIcon()
 
 // --------------------------------
 //  クリックボタン
+//    TODO: 複雑になったので整理
 // --------------------------------
 void CMFC_RhythmGameDlg::OnBnClickedButton1()
 {
     // 差分の時間
     static DWORD time_click_delta;
+    // 押した時間を格納
+    static DWORD now;
+    // クリックがスタートした時間
+    static DWORD time_click_start;
     // 出力する文字列の作成
     CString str;
 
+    // クリックした時間を取得
+    now = timeGetTime();
+
     // 差分の時間計算
     //   TODO: 計算をわかりやすく
-    time_click_delta = timeGetTime() - time_start - time_Metro;
+    time_click_delta = now - time_start - time_Metro;
 
     // ノーツ数をプラス
     now_notes_count++;
+
+    // キー音を鳴らす
+    KeySound = std::thread(PlayKeySound);
+    KeySound.detach();
+
+    // スタートの時だったら初期化
+    if (now_notes_count == 0)
+    {
+        // 押した時の時間を記録
+        time_click_start = now;
+    }
 
     // 規定ノーツ数以内で判定を取る
     if (now_notes_count > 0 &&
@@ -342,6 +402,7 @@ void CMFC_RhythmGameDlg::OnBnClickedButton1()
 // --------------------------------
 void CMFC_RhythmGameDlg::OnBnClickedButton2()
 {
+    // TODO: 初期化を関数化
     // 押した時の時間を記録
     time_start = timeGetTime();
     // メトロノームフラグをオン
@@ -350,6 +411,8 @@ void CMFC_RhythmGameDlg::OnBnClickedButton2()
     tempoCount = 1.0;
     // ノーツ数を初期化
     now_notes_count = -1;
+    // ゲージを初期化
+    clear_gauge = 0;
 
     // スレッド制御
     if (Metronome.get_id() == std::thread::id())
@@ -367,5 +430,8 @@ void CMFC_RhythmGameDlg::OnBnClickedButton3()
     // メトロノームフラグをオフ
     isMetronome = false;
     // メトロノームスレッドを放棄
-    Metronome.detach();
+    if (Metronome.get_id() != std::thread::id())
+    {
+        Metronome.detach();
+    }
 }
