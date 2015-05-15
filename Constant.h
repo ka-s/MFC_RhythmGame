@@ -4,7 +4,7 @@
 double bpm = 100.0;
 
 // ƒm[ƒc”
-int notes = 15;
+int notes = 8;
 
 // ”»’è•[ms]
 const int judgment_perfect = 64;

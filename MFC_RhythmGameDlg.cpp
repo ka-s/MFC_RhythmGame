@@ -422,6 +422,7 @@ void CMFC_RhythmGameDlg::OnBnClickedButton3()
 void CMFC_RhythmGameDlg::OnBnClickedButton4()
 {
     music_id = 1;
+    notes = 8;
 }
 
 // --------------------------------
@@ -430,6 +431,7 @@ void CMFC_RhythmGameDlg::OnBnClickedButton4()
 void CMFC_RhythmGameDlg::OnBnClickedButton5()
 {
     music_id = 2;
+    notes = 15;
 }
 
 // --------------------------------
